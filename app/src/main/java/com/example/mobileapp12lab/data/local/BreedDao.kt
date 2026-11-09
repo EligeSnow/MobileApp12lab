@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +18,9 @@ interface BreedDao {
     @Query("SELECT * FROM breeds WHERE isFavorite = 1 ORDER BY name")
     fun observeFavorites(): Flow<List<BreedEntity>>
 
+    @Query("SELECT id FROM breeds WHERE isFavorite = 1")
+    suspend fun getFavoriteIds(): List<Int>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBreeds(breeds: List<BreedEntity>)
 
@@ -25,4 +29,13 @@ interface BreedDao {
 
     @Query("DELETE FROM breeds WHERE isFavorite = 0")
     suspend fun deleteNonFavorites()
+
+    @Transaction
+    suspend fun replaceBreeds(breeds: List<BreedEntity>) {
+        val favoriteIds = getFavoriteIds().toSet()
+        deleteNonFavorites()
+        insertBreeds(breeds.map { breed ->
+            breed.copy(isFavorite = breed.id in favoriteIds)
+        })
+    }
 }
