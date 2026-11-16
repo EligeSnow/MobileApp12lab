@@ -9,6 +9,7 @@ import com.example.mobileapp12lab.data.remote.DogApi
 import com.example.mobileapp12lab.data.remote.DogRemoteDataSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -41,7 +42,18 @@ object AppDependencies {
         // Retrofit преобразует JSON TheDogAPI в DTO с помощью Moshi.
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okhttp3.OkHttpClient.Builder().build())
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor { chain ->
+                        val request = chain.request().newBuilder().apply {
+                            if (BuildConfig.DOG_API_KEY.isNotBlank()) {
+                                header("x-api-key", BuildConfig.DOG_API_KEY)
+                            }
+                        }.build()
+                        chain.proceed(request)
+                    }
+                    .build()
+            )
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
         val dogApi = retrofit.create(DogApi::class.java)

@@ -30,11 +30,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
-import com.example.mobileapp12lab.ui.theme.MobileApp12labTheme
 
 // Экран получает данные и callbacks извне; бизнес-логика остаётся во ViewModel.
 @Composable
@@ -216,41 +214,5 @@ private fun BreedCard(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BreedListScreenPreview() {
-    val breeds = listOf(
-        BreedEntity(
-            id = 1,
-            name = "Golden Retriever",
-            temperament = "Friendly, intelligent, devoted",
-            origin = "Scotland",
-            lifeSpan = "10 - 12 years",
-            description = "A friendly and reliable family companion.",
-            imageUrl = ""
-        ),
-        BreedEntity(
-            id = 2,
-            name = "Shiba Inu",
-            temperament = "Alert, active, independent",
-            origin = "Japan",
-            lifeSpan = "13 - 16 years",
-            description = "A spirited and good-natured companion.",
-            imageUrl = ""
-        )
-    )
-
-    MobileApp12labTheme {
-        BreedListScreen(
-            uiState = BreedUiState(breeds = breeds),
-            searchQuery = "",
-            onSearchQueryChange = {},
-            onRefresh = {},
-            onBreedClick = {},
-            onFavoritesClick = {}
-        )
     }
 }

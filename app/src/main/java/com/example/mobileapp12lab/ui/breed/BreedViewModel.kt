@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobileapp12lab.data.BreedRepository
 import com.example.mobileapp12lab.data.local.BreedEntity
+import retrofit2.HttpException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -62,7 +63,7 @@ class BreedViewModel(
                 throw exception
             } catch (exception: Exception) {
                 // Ошибка сети показывается отдельно, уже загруженный локальный список остаётся доступен.
-                val message = exception.message ?: "Unable to load breeds."
+                val message = exception.toUserMessage("Unable to load breeds.")
                 _uiState.update { it.copy(errorMessage = message) }
                 _events.emit(BreedUiEvent.ShowMessage(message))
             } finally {
@@ -99,7 +100,7 @@ class BreedViewModel(
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                val message = exception.message ?: "Unable to load breed images."
+                val message = exception.toUserMessage("Unable to load breed images.")
                 _uiState.update {
                     it.copy(isDetailLoading = false, detailErrorMessage = message)
                 }
@@ -139,4 +140,11 @@ class BreedViewModel(
             }
         }
     }
+
+    private fun Exception.toUserMessage(fallback: String): String =
+        if (this is HttpException && code() == 403) {
+            "TheDogAPI requires an API key. Add dogApiKey=YOUR_API_KEY to local.properties, sync Gradle, and run again."
+        } else {
+            message ?: fallback
+        }
 }
