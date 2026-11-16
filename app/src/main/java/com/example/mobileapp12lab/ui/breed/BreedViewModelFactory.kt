@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobileapp12lab.data.BreedRepository
 
+// Ручная фабрика внедряет репозиторий в ViewModel вместо Hilt, Dagger или Koin.
 class BreedViewModelFactory(
     private val repository: BreedRepository
 ) : ViewModelProvider.Factory {

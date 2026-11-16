@@ -23,6 +23,7 @@ import com.example.mobileapp12lab.ui.breed.BreedUiEvent
 import com.example.mobileapp12lab.ui.breed.BreedViewModel
 import kotlinx.coroutines.flow.collect
 
+// Связывает стек Navigation 3, ViewModel и три composable-экрана.
 @Composable
 fun BreedNavigation(
     viewModel: BreedViewModel,
@@ -33,6 +34,7 @@ fun BreedNavigation(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val snackbarHostState = SnackbarHostState()
 
+    // SharedFlow используется для разовых сообщений, которые не должны оставаться в UI-state.
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
@@ -54,6 +56,7 @@ fun BreedNavigation(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
+            // Для каждого типа ключа задаём соответствующий экран и действия навигации.
             entryProvider = entryProvider {
                 entry<BreedListKey> {
                     BreedListScreen(
@@ -70,6 +73,7 @@ fun BreedNavigation(
                     )
                 }
                 entry<BreedDetailsKey> { key ->
+                    // При открытии ключа загружаем данные выбранной породы и её фотографии.
                     LaunchedEffect(key.breedId) {
                         viewModel.selectBreed(key.breedId)
                     }

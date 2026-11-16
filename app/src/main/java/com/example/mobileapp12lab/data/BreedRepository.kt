@@ -7,6 +7,7 @@ import com.example.mobileapp12lab.data.remote.model.BreedDto
 import com.example.mobileapp12lab.data.remote.model.DogImageDto
 import kotlinx.coroutines.flow.Flow
 
+// UI получает данные только через репозиторий, не обращаясь напрямую к сети или Room.
 class BreedRepository(
     private val remoteDataSource: DogRemoteDataSource,
     private val localDataSource: BreedLocalDataSource
@@ -20,6 +21,7 @@ class BreedRepository(
     fun observeFavorites(): Flow<List<BreedEntity>> =
         localDataSource.observeFavorites()
 
+    // Успешный ответ сети сохраняется локально; наблюдаемые Room Flow обновляют экраны.
     suspend fun refreshBreeds() {
         val breeds = remoteDataSource.getBreeds().map(BreedDto::toEntity)
         localDataSource.replaceBreeds(breeds)
@@ -33,6 +35,7 @@ class BreedRepository(
     }
 }
 
+// API DTO отделён от Entity; при отсутствии части полей подставляем безопасные значения.
 private fun BreedDto.toEntity() = BreedEntity(
     id = id,
     name = name,

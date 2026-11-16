@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+// ViewModel координирует UI и репозиторий, но не содержит SQL или сетевых запросов.
 class BreedViewModel(
     private val repository: BreedRepository
 ) : ViewModel() {
@@ -33,6 +34,7 @@ class BreedViewModel(
     private var imageJob: Job? = null
 
     init {
+        // Сначала подписываемся на Room: кэш доступен UI сразу, даже если сеть недоступна.
         observeBreeds()
         observeFavorites()
         refreshBreeds()
@@ -43,6 +45,7 @@ class BreedViewModel(
     }
 
     fun refreshBreeds() {
+        // Не запускаем несколько одинаковых сетевых обновлений одновременно.
         if (refreshJob?.isActive == true) return
 
         refreshJob = viewModelScope.launch {
@@ -58,6 +61,7 @@ class BreedViewModel(
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
+                // Ошибка сети показывается отдельно, уже загруженный локальный список остаётся доступен.
                 val message = exception.message ?: "Unable to load breeds."
                 _uiState.update { it.copy(errorMessage = message) }
                 _events.emit(BreedUiEvent.ShowMessage(message))
@@ -70,6 +74,7 @@ class BreedViewModel(
     }
 
     fun selectBreed(breedId: Int) {
+        // При выборе другой породы отменяем прежние наблюдение и загрузку изображений.
         detailJob?.cancel()
         imageJob?.cancel()
         _uiState.update {
@@ -118,6 +123,7 @@ class BreedViewModel(
 
     private fun observeBreeds() {
         viewModelScope.launch {
+            // Поиск применяется к потоку из Room, поэтому каталог обновляется реактивно.
             combine(repository.observeBreeds(), searchQuery) { breeds, query ->
                 breeds.filter { it.name.contains(query.trim(), ignoreCase = true) }
             }.collect { filteredBreeds ->

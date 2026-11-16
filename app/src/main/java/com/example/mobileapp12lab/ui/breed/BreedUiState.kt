@@ -3,6 +3,7 @@ package com.example.mobileapp12lab.ui.breed
 import com.example.mobileapp12lab.data.local.BreedEntity
 import com.example.mobileapp12lab.data.remote.model.DogImageDto
 
+// Единый снимок состояния, который Compose отображает для списка, деталей и избранного.
 data class BreedUiState(
     val breeds: List<BreedEntity> = emptyList(),
     val favoriteBreeds: List<BreedEntity> = emptyList(),
@@ -16,6 +17,7 @@ data class BreedUiState(
     val detailErrorMessage: String? = null
 )
 
+// Короткоживущие сообщения отправляются отдельно от состояния экрана через SharedFlow.
 sealed interface BreedUiEvent {
     data class ShowMessage(val message: String) : BreedUiEvent
 }

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
 
+// Экран получает данные и callbacks извне; бизнес-логика остаётся во ViewModel.
 @Composable
 fun BreedListScreen(
     uiState: BreedUiState,
@@ -75,6 +76,7 @@ fun BreedListScreen(
             label = { Text("Search breeds") }
         )
 
+        // Жест pull-to-refresh повторно запрашивает сеть, а список продолжает показывать Room-кэш.
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = onRefresh,
@@ -178,6 +180,7 @@ private fun BreedCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
+                // Coil загружает изображение по сети/кэшу; цветной painter виден до загрузки или при ошибке.
                 model = breed.imageUrl.takeIf(String::isNotBlank),
                 contentDescription = "${breed.name} photo",
                 modifier = Modifier

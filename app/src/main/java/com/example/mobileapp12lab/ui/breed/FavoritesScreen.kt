@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
 
+// Список приходит из наблюдаемого Room Flow и обновляется после переключения избранного.
 @Composable
 fun FavoritesScreen(
     breeds: List<BreedEntity>,

@@ -12,6 +12,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+// Composition root приложения: вручную связывает Room, Retrofit и репозиторий без DI-библиотек.
 object AppDependencies {
     private const val BASE_URL = "https://api.thedogapi.com/v1/"
     private const val DATABASE_NAME = "dog_breeds.db"
@@ -19,6 +20,7 @@ object AppDependencies {
     @Volatile
     private var repository: BreedRepository? = null
 
+    // Синхронизация не позволяет создать несколько экземпляров репозитория при параллельном вызове.
     fun breedRepository(context: Context): BreedRepository =
         repository ?: synchronized(this) {
             repository ?: createRepository(context.applicationContext).also {
@@ -27,6 +29,7 @@ object AppDependencies {
         }
 
     private fun createRepository(context: Context): BreedRepository {
+        // Используем applicationContext, чтобы долгоживущая база не удерживала Activity.
         val database = Room.databaseBuilder(
             context,
             BreedDatabase::class.java,
@@ -35,6 +38,7 @@ object AppDependencies {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
+        // Retrofit преобразует JSON TheDogAPI в DTO с помощью Moshi.
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okhttp3.OkHttpClient.Builder().build())

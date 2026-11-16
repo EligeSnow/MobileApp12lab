@@ -16,6 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MobileApp12labTheme {
+                // Фабрика вручную передаёт ViewModel единую точку доступа к данным.
                 val breedViewModel: BreedViewModel = viewModel(
                     factory = BreedViewModelFactory(
                         AppDependencies.breedRepository(applicationContext)

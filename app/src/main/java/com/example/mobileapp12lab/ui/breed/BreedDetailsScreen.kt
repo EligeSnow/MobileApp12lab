@@ -30,6 +30,7 @@ import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
 import com.example.mobileapp12lab.data.remote.model.DogImageDto
 
+// Подробности и фотографии отображаются из текущего состояния ViewModel.
 @Composable
 fun BreedDetailsScreen(
     breed: BreedEntity?,
@@ -50,6 +51,7 @@ fun BreedDetailsScreen(
         return
     }
 
+    // Сохраняем основное фото породы как запасной вариант и убираем повторяющиеся URL.
     val imageUrls = (images.map(DogImageDto::url) + breed.imageUrl)
         .filter(String::isNotBlank)
         .distinct()
@@ -66,6 +68,7 @@ fun BreedDetailsScreen(
         )
 
         if (imageUrls.isNotEmpty()) {
+            // Пользователь перелистывает изображения выбранной породы горизонтальным жестом.
             val pagerState = rememberPagerState(pageCount = { imageUrls.size })
             HorizontalPager(
                 state = pagerState,

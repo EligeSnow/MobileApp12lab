@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BreedDao {
+    // Room повторно выдаёт список через Flow после каждого изменения таблицы breeds.
     @Query("SELECT * FROM breeds ORDER BY name")
     fun observeBreeds(): Flow<List<BreedEntity>>
 
@@ -30,6 +31,7 @@ interface BreedDao {
     @Query("DELETE FROM breeds WHERE isFavorite = 0")
     suspend fun deleteNonFavorites()
 
+    // Обновление выполняется атомарно: избранное сохраняется, а старый каталог заменяется данными API.
     @Transaction
     suspend fun replaceBreeds(breeds: List<BreedEntity>) {
         val favoriteIds = getFavoriteIds().toSet()

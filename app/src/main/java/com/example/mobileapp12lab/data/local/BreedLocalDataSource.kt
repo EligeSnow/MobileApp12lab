@@ -2,6 +2,7 @@ package com.example.mobileapp12lab.data.local
 
 import kotlinx.coroutines.flow.Flow
 
+// Изолирует DAO, чтобы репозиторий не зависел от деталей Room.
 class BreedLocalDataSource(
     private val breedDao: BreedDao
 ) {
