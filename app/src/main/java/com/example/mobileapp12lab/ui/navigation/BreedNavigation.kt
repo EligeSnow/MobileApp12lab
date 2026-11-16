@@ -17,6 +17,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.mobileapp12lab.ui.breed.BreedListScreen
+import com.example.mobileapp12lab.ui.breed.BreedDetailsScreen
+import com.example.mobileapp12lab.ui.breed.FavoritesScreen
 import com.example.mobileapp12lab.ui.breed.BreedUiEvent
 import com.example.mobileapp12lab.ui.breed.BreedViewModel
 import kotlinx.coroutines.flow.collect
@@ -71,34 +73,25 @@ fun BreedNavigation(
                     LaunchedEffect(key.breedId) {
                         viewModel.selectBreed(key.breedId)
                     }
-                    DestinationPlaceholder(
-                        title = uiState.selectedBreed?.name ?: "Breed details",
-                        firstAction = "Back to breeds",
-                        onFirstAction = { backStack.removeLastOrNull() }
+                    BreedDetailsScreen(
+                        breed = uiState.selectedBreed?.takeIf { it.id == key.breedId },
+                        images = uiState.detailImages,
+                        isLoading = uiState.isDetailLoading,
+                        errorMessage = uiState.detailErrorMessage,
+                        onToggleFavorite = viewModel::setFavorite,
+                        onBack = { backStack.removeLastOrNull() }
                     )
                 }
                 entry<FavoritesKey> {
-                    DestinationPlaceholder(
-                        title = "Favorites",
-                        firstAction = "Back to breeds",
-                        onFirstAction = { backStack.removeLastOrNull() }
+                    FavoritesScreen(
+                        breeds = uiState.favoriteBreeds,
+                        onBreedClick = { breed ->
+                            backStack.add(BreedDetailsKey(breed.id))
+                        },
+                        onBack = { backStack.removeLastOrNull() }
                     )
                 }
             }
         )
-    }
-}
-
-@Composable
-private fun DestinationPlaceholder(
-    title: String,
-    firstAction: String,
-    onFirstAction: () -> Unit
-) {
-    Column {
-        Text(text = title)
-        Button(onClick = onFirstAction) {
-            Text(text = firstAction)
-        }
     }
 }
