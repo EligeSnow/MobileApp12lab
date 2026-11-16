@@ -25,10 +25,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
 import com.example.mobileapp12lab.data.remote.model.DogImageDto
+import com.example.mobileapp12lab.ui.theme.MobileApp12labTheme
 
 // Подробности и фотографии отображаются из текущего состояния ViewModel.
 @Composable
@@ -145,5 +147,31 @@ fun BreedDetailsScreen(
                 Text(if (breed.isFavorite) "Remove favorite" else "Add to favorites")
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun BreedDetailsScreenPreview() {
+    MobileApp12labTheme {
+        BreedDetailsScreen(
+            breed = BreedEntity(
+                id = 1,
+                name = "Golden Retriever",
+                temperament = "Friendly, intelligent, devoted",
+                origin = "Scotland",
+                lifeSpan = "10 - 12 years",
+                description = "A friendly and reliable family companion.",
+                imageUrl = ""
+            ),
+            images = listOf(
+                DogImageDto(id = "preview-1", url = ""),
+                DogImageDto(id = "preview-2", url = "")
+            ),
+            isLoading = false,
+            errorMessage = null,
+            onToggleFavorite = { _, _ -> },
+            onBack = {}
+        )
     }
 }

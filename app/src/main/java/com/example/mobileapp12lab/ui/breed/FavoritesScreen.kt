@@ -23,9 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.mobileapp12lab.data.local.BreedEntity
+import com.example.mobileapp12lab.ui.theme.MobileApp12labTheme
 
 // Список приходит из наблюдаемого Room Flow и обновляется после переключения избранного.
 @Composable
@@ -127,5 +129,28 @@ private fun FavoriteBreedCard(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FavoritesScreenPreview() {
+    MobileApp12labTheme {
+        FavoritesScreen(
+            breeds = listOf(
+                BreedEntity(
+                    id = 1,
+                    name = "Golden Retriever",
+                    temperament = "Friendly, intelligent, devoted",
+                    origin = "Scotland",
+                    lifeSpan = "10 - 12 years",
+                    description = "A friendly and reliable family companion.",
+                    imageUrl = "",
+                    isFavorite = true
+                )
+            ),
+            onBreedClick = {},
+            onBack = {}
+        )
     }
 }
