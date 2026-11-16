@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.mobileapp12lab.ui.breed.BreedListScreen
 import com.example.mobileapp12lab.ui.breed.BreedUiEvent
 import com.example.mobileapp12lab.ui.breed.BreedViewModel
 import kotlinx.coroutines.flow.collect
@@ -27,6 +28,7 @@ fun BreedNavigation(
 ) {
     val backStack = rememberNavBackStack(BreedListKey)
     val uiState by viewModel.uiState.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
     val snackbarHostState = SnackbarHostState()
 
     LaunchedEffect(viewModel) {
@@ -52,30 +54,31 @@ fun BreedNavigation(
                 .fillMaxSize(),
             entryProvider = entryProvider {
                 entry<BreedListKey> {
-                    NavigationPlaceholder(
-                        title = "Dog breeds",
-                        firstAction = "Open breed details",
-                        onFirstAction = {
-                            uiState.breeds.firstOrNull()?.let { breed ->
-                                backStack.add(BreedDetailsKey(breed.id))
-                            }
+                    BreedListScreen(
+                        uiState = uiState,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = viewModel::onSearchQueryChange,
+                        onRefresh = viewModel::refreshBreeds,
+                        onBreedClick = { breed ->
+                            backStack.add(BreedDetailsKey(breed.id))
                         },
-                        secondAction = "Favorites",
-                        onSecondAction = { backStack.add(FavoritesKey) }
+                        onFavoritesClick = {
+                            backStack.add(FavoritesKey)
+                        }
                     )
                 }
                 entry<BreedDetailsKey> { key ->
                     LaunchedEffect(key.breedId) {
                         viewModel.selectBreed(key.breedId)
                     }
-                    NavigationPlaceholder(
+                    DestinationPlaceholder(
                         title = uiState.selectedBreed?.name ?: "Breed details",
                         firstAction = "Back to breeds",
                         onFirstAction = { backStack.removeLastOrNull() }
                     )
                 }
                 entry<FavoritesKey> {
-                    NavigationPlaceholder(
+                    DestinationPlaceholder(
                         title = "Favorites",
                         firstAction = "Back to breeds",
                         onFirstAction = { backStack.removeLastOrNull() }
@@ -87,22 +90,15 @@ fun BreedNavigation(
 }
 
 @Composable
-private fun NavigationPlaceholder(
+private fun DestinationPlaceholder(
     title: String,
     firstAction: String,
-    onFirstAction: () -> Unit,
-    secondAction: String? = null,
-    onSecondAction: (() -> Unit)? = null
+    onFirstAction: () -> Unit
 ) {
     Column {
         Text(text = title)
         Button(onClick = onFirstAction) {
             Text(text = firstAction)
-        }
-        if (secondAction != null && onSecondAction != null) {
-            Button(onClick = onSecondAction) {
-                Text(text = secondAction)
-            }
         }
     }
 }
